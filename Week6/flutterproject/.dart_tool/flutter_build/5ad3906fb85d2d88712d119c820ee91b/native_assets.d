@@ -1,0 +1,1 @@
+ C:\\2024-1-Mobile-study\\2024-1-Mobile-study\\Week6\\flutterproject\\.dart_tool\\flutter_build\\5ad3906fb85d2d88712d119c820ee91b\\native_assets.yaml: 
