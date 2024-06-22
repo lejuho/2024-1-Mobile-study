@@ -35,7 +35,7 @@ class _MyAppState extends State<MyApp> {
         weatherData = data;
       });
     } catch (e) {
-      print("Error: $e");
+      print("에러: $e");
     }
   }
 
@@ -44,23 +44,23 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text("Weather App"),
+          title: Text("날씨"),
         ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (weatherData != null) ...[
-                Text("Temperature: ${weatherData!.main.temp}"),
-                Text("Humidity: ${weatherData!.main.humidity}"),
-                Text("Pressure: ${weatherData!.main.pressure}"),
-                Text("Wind Speed: ${weatherData!.wind.speed}"),
+                Text("기온: ${weatherData!.main.temp}"),
+                Text("습도: ${weatherData!.main.humidity}"),
+                Text("기압: ${weatherData!.main.pressure}"),
+                Text("풍속: ${weatherData!.wind.speed}"),
               ] else ...[
-                Text("No data"),
+                Text("~데이터 없음"),
               ],
               ElevatedButton(
                 onPressed: fetchData,
-                child: Text("Fetch Weather"),
+                child: Text("날씨 불러오기!"),
               ),
             ],
           ),
