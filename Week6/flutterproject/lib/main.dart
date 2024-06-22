@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/widgets.dart';
+import 'models/model.dart';
+import 'services/weather_service.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,94 +15,57 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-String apiKey = "38dd257211fa38fd004451ca1fd1f593";
-String cityName = "kor";
-Response<dynamic>? response;
-
 class _MyAppState extends State<MyApp> {
-  final Dio dio = Dio();
+  final Dio dio = Dio()..interceptors.add(PrettyDioLogger());
+  final String apiKey = "38dd257211fa38fd004451ca1fd1f593";
+  final String cityName = "Seoul";
+  late WeatherService weatherService;
+  Model? weatherData;
 
-  String apiCall =
-      "https://api.openweathermap.org/data/2.5/weather?q=$cityName&appid=$apiKey";
+  @override
+  void initState() {
+    super.initState();
+    weatherService = WeatherService(dio);
+  }
 
   Future<void> fetchData() async {
     try {
-      final res = await dio.get(apiCall);
+      final data = await weatherService.getWeather(cityName, apiKey);
       setState(() {
-        response = res;
-      }); // 화면을 다시 그리도록 상태 업데이트
+        weatherData = data;
+      });
     } catch (e) {
-      print("데이터를 가져오는 중 오류 발생: $e");
-      // 에러를 적절히 처리하세요
+      print("Error: $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(
-          fontFamily: 'Pretendard',
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text("Weather App"),
         ),
-        home: Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              "GDSC 모바일 스터디",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          body: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  color: Colors.black,
-                  height: 0.5,
-                ),
-                SizedBox(
-                  height: 1,
-                ),
-                ElevatedButton(
-                    onPressed: fetchData,
-                    child: const Text("날씨 API 받기!!",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black))),
-                if (response != null)
-                  Column(
-                    children: [
-                      Text(
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                          "기온 : ${response!.data?['main']['temp'] ?? "No Data~"}"),
-                      Text(
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                          "습도 : ${response!.data?['main']['humidity'] ?? "No Data~"}"),
-                      Text(
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                          "기압 : ${response!.data?['main']['pressure'] ?? "No Data~"}"),
-                      Text(
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                          "풍속 : ${response!.data?['wind']['speed'] ?? "No data~"}"),
-                    ],
-                  ),
-                if (response == null)
-                  const Column(
-                    children: [
-                      Text(
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                          "기온 : No Data~"),
-                      Text(
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                          "습도 : No Data~"),
-                      Text(
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                          "기압 : No Data~"),
-                      Text(
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                          "풍속 : No data~"),
-                    ],
-                  ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (weatherData != null) ...[
+                Text("Temperature: ${weatherData!.main.temp}"),
+                Text("Humidity: ${weatherData!.main.humidity}"),
+                Text("Pressure: ${weatherData!.main.pressure}"),
+                Text("Wind Speed: ${weatherData!.wind.speed}"),
+              ] else ...[
+                Text("No data"),
               ],
-            ),
+              ElevatedButton(
+                onPressed: fetchData,
+                child: Text("Fetch Weather"),
+              ),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

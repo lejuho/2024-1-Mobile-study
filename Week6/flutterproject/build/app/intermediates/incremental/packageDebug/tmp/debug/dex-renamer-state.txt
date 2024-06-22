@@ -1,4 +1,0 @@
-#Thu May 09 20:15:53 KST 2024
-base.0=C\:\\2024-1-Mobile-study\\2024-1-Mobile-study\\Week6\\flutterproject\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
-path.0=classes.dex
-renamed.0=classes.dex
